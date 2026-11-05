@@ -66,12 +66,23 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
   const playerNames = [seriesPlayerOneName, seriesPlayerTwoName] as const;
 
   // Agents this player drafted in THE ROOM BEING SHOWN (game 1 room or game 2 room).
-  const draftSide = (side === 'one' ? seriesPlayerOneId : seriesPlayerTwoId) === room.player_one_id ? 'I1' : 'I2';
+  const draftSideForSeriesPlayer = (which: 'one'|'two'): 'I1'|'I2' => {
+    if (room.training_mode) {
+      // Training rooms put the owner in both player ID fields, so IDs cannot tell
+      // the two drafted rosters apart. Use the visible side swap and BO2 game swap.
+      const originalOne: 'I1'|'I2' = room.training_sides_swapped ? 'I2' : 'I1';
+      const gameOneSide: 'I1'|'I2' = isSecondGame ? (originalOne === 'I1' ? 'I2' : 'I1') : originalOne;
+      return which === 'one' ? gameOneSide : gameOneSide === 'I1' ? 'I2' : 'I1';
+    }
+    const playerId = which === 'one' ? seriesPlayerOneId : seriesPlayerTwoId;
+    return playerId === room.player_one_id ? 'I1' : 'I2';
+  };
+  const draftSide = draftSideForSeriesPlayer(side);
   const draftedIds = useMemo(
     () => Array.from(new Set<string>((room.actions ?? [])
       .filter((a: any) => (a.action === 'pick' || a.action === 'mirror') && a.side === draftSide)
       .map((a: any) => String(a.agent_id)))).slice(0, MAX_AGENTS),
-    [room.actions, draftSide],
+    [room.actions, draftSide, room.training_mode, room.training_sides_swapped, isSecondGame],
   );
 
   // Costs come from the shared catalog passed by the draft room (not from this browser's localStorage).
@@ -281,7 +292,7 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
     : 'Результаты BO2';
 
   const draftedIdsForSide = (which: 'one'|'two') => Array.from(new Set<string>((room.actions ?? [])
-    .filter((a: any) => (a.action === 'pick' || a.action === 'mirror') && a.side === ((which === 'one' ? seriesPlayerOneId : seriesPlayerTwoId) === room.player_one_id ? 'I1' : 'I2'))
+    .filter((a: any) => (a.action === 'pick' || a.action === 'mirror') && a.side === draftSideForSeriesPlayer(which))
     .map((a: any) => String(a.agent_id)))).slice(0, MAX_AGENTS);
   const storedSlotsFor = (game: 1|2, which: 'one'|'two'): SquadSlot[] => {
     const key = game === 1 ? (which === 'one' ? 'squad_one' : 'squad_two') : (which === 'one' ? 'game2_squad_one' : 'game2_squad_two');
