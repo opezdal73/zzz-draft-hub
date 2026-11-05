@@ -393,8 +393,6 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
   }
   async function judgeAction(action: 'undo'|'pause'|'resume'|'bo2_game2'|'swap_sides') {
     if (!supabase || !activeJudgeToken) return;
-    const labels = { undo: 'Откатить последний ход?', pause: 'Поставить драфт на паузу?', resume: 'Продолжить драфт?', bo2_game2: 'Сразу начать второй драфт BO2?', swap_sides: 'Поменять игроков сторонами? Порядок уже сделанных ходов сохранится за теми же игроками.' };
-    if (!window.confirm(labels[action])) return;
     setJudgeBusy(true); setMessage('');
     try {
       const { data, error } = action === 'swap_sides'
