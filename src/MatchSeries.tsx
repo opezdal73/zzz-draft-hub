@@ -127,8 +127,16 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
     const level = getEngineCopyAwakening(levels, engineId, copyNumber, engine);
     return [{ id: engineId, key, level, engine }];
   });
+  const targetAgentSpecialty = enginePickerAgentId
+    ? costAgents.find(agent => agent.id === enginePickerAgentId)?.specialty
+    : undefined;
   const sortedEngineCopies = [...availableEngineCopies].sort((a, b) =>
-    compareBySpecialty(a.engine, b.engine) || (a.id === b.id ? b.level - a.level : 0) || a.key.localeCompare(b.key),
+    (targetAgentSpecialty
+      ? Number((a.engine.specialty || 'Не указана') !== targetAgentSpecialty) - Number((b.engine.specialty || 'Не указана') !== targetAgentSpecialty)
+      : 0)
+    || compareBySpecialty(a.engine, b.engine)
+    || (a.id === b.id ? b.level - a.level : 0)
+    || a.key.localeCompare(b.key),
   );
   const filteredEngineCopies = sortedEngineCopies.filter(copy =>
     copy.engine.name.toLocaleLowerCase('ru').includes(enginePickerSearch.toLocaleLowerCase('ru'))
