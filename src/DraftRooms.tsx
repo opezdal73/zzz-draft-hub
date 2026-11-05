@@ -524,10 +524,20 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
         //  - pick: only your OWN roster;
         //  - mirror stage: your own roster; an agent the opponent has picked is a mirror pick only if it is in your roster.
         const pool = effectiveAction==='ban' ? opponentRoster : isMirrorStage ? [...new Set([...ownRoster,...eligibleMirrors])] : ownRoster;
+        const renderSequencePlayer = (side:'I1'|'I2',kind:'ban'|'pick') => <div className={`draft-sequence-player ${side==='I2'?'right':''}`}>
+          {flattenedSteps.map((step,index)=>({step,index})).filter(({step})=>kind==='ban'?step.action==='ban':step.action!=='ban').filter(({step})=>step.side===side).map(({step,index})=>{
+            const played=room.actions.find(action=>action.step_index===index&&action.side===side);
+            const agent=played?agents.find(item=>item.id===played.agent_id):undefined;
+            const stepLabel=`${index+1}. ${actionName(step.action)}${agent?` · ${agent.name}`:''}`;
+            return <span key={`${index}-${played?.agent_id||'pending'}`} className={`draft-sequence-chip ${played?'done has-agent':''} ${index===room.current_step?'current':''} ${step.action==='mirror'?'mirror':''}`} title={stepLabel}>
+              {played&&agent?<img src={getAgentIconUrl(agent.id)} data-fallback={agent.imageFallbackUrl} alt={agent.name} onError={e=>{const img=e.currentTarget;const fallback=img.dataset.fallback;if(fallback&&img.src!==fallback){img.dataset.fallback='';img.src=fallback;}else img.style.display='none';}}/>:played?'✓':index+1}
+            </span>;
+          })}
+        </div>;
         const stepRows = (kind:'ban'|'pick') => <div className={`draft-sequence-row ${kind}`}>
-          <div className="draft-sequence-player">{flattenedSteps.map((step,index)=>({step,index})).filter(({step})=>kind==='ban'?step.action==='ban':step.action!=='ban').filter(({step})=>step.side==='I1').map(({step,index})=><span key={index} className={`draft-sequence-chip ${index<room.current_step?'done':''} ${index===room.current_step?'current':''} ${step.action==='mirror'?'mirror':''}`} title={`${index+1}. ${actionName(step.action)}`}>{index+1}</span>)}</div>
+          {renderSequencePlayer('I1',kind)}
           <b>{kind==='ban'?'БАНЫ':'ПИКИ'}</b>
-          <div className="draft-sequence-player right">{flattenedSteps.map((step,index)=>({step,index})).filter(({step})=>kind==='ban'?step.action==='ban':step.action!=='ban').filter(({step})=>step.side==='I2').map(({step,index})=><span key={index} className={`draft-sequence-chip ${index<room.current_step?'done':''} ${index===room.current_step?'current':''} ${step.action==='mirror'?'mirror':''}`} title={`${index+1}. ${actionName(step.action)}`}>{index+1}</span>)}</div>
+          {renderSequencePlayer('I2',kind)}
         </div>;
         const renderRosterPanel = (sideId:'I1'|'I2', name:string, ids:string[], snapshot:Room['roster_snapshot_one']) => {
           const lowerSearch=agentSearch.toLocaleLowerCase('ru');
