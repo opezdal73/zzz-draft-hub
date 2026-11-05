@@ -1,0 +1,864 @@
+{
+  "agents": [
+    {
+      "id": "anby",
+      "name": "Энби Демара",
+      "file": "Энби Иконка.png",
+      "fallback": "Энби Демара Иконка.png"
+    },
+    {
+      "id": "anton",
+      "name": "Антон Иванов",
+      "file": "Антон Иконка.png",
+      "fallback": "Антон Иванов Иконка.png"
+    },
+    {
+      "id": "ben",
+      "name": "Бен Биггер",
+      "file": "Бен Иконка.png",
+      "fallback": "Бен Биггер Иконка.png"
+    },
+    {
+      "id": "billy",
+      "name": "Билли Кид",
+      "file": "Билли Иконка.png",
+      "fallback": "Билли Кид Иконка.png"
+    },
+    {
+      "id": "corin",
+      "name": "Корин Уикс",
+      "file": "Корин Иконка.png",
+      "fallback": "Корин Уикс Иконка.png"
+    },
+    {
+      "id": "lucy",
+      "name": "Люсиана де Монтефио",
+      "file": "Люси Иконка.png",
+      "fallback": "Люсиана де Монтефио Иконка.png"
+    },
+    {
+      "id": "komano-manato",
+      "name": "Комано Манато",
+      "file": "Комано Манато Иконка.png",
+      "fallback": "Комано Манато Иконка.png"
+    },
+    {
+      "id": "nicole",
+      "name": "Николь Демара",
+      "file": "Николь Иконка.png",
+      "fallback": "Николь Демара Иконка.png"
+    },
+    {
+      "id": "piper",
+      "name": "Пайпер Уил",
+      "file": "Пайпер Иконка.png",
+      "fallback": "Пайпер Уил Иконка.png"
+    },
+    {
+      "id": "pulchra",
+      "name": "Пульхра Феллини",
+      "file": "Пульхра Иконка.png",
+      "fallback": "Пульхра Феллини Иконка.png"
+    },
+    {
+      "id": "seth",
+      "name": "Сет Лоуэлл",
+      "file": "Сет Иконка.png",
+      "fallback": "Сет Лоуэлл Иконка.png"
+    },
+    {
+      "id": "sou-kaku",
+      "name": "Сокаку",
+      "file": "Сокаку Иконка.png",
+      "fallback": "Сокаку Иконка.png"
+    },
+    {
+      "id": "pan-yinhu",
+      "name": "Пань Иньху",
+      "file": "Пань Иньху Иконка.png",
+      "fallback": "Пань Иньху Иконка.png"
+    },
+    {
+      "id": "rina",
+      "name": "Александрина Себастиан",
+      "file": "Рина Иконка.png",
+      "fallback": "Александрина Себастиан Иконка.png"
+    },
+    {
+      "id": "alice",
+      "name": "Элис Таймфилд",
+      "file": "Элис Иконка.png",
+      "fallback": "Элис Таймфилд Иконка.png"
+    },
+    {
+      "id": "arlecchino",
+      "name": "Ария",
+      "file": "Ария Иконка.png",
+      "fallback": "Ария Иконка.png"
+    },
+    {
+      "id": "astra",
+      "name": "Астра Яо",
+      "file": "Астра Иконка.png",
+      "fallback": "Астра Яо Иконка.png"
+    },
+    {
+      "id": "banyue",
+      "name": "Баньюэ",
+      "file": "Баньюэ Иконка.png",
+      "fallback": "Баньюэ Иконка.png"
+    },
+    {
+      "id": "burnice",
+      "name": "Бёрнис Уайт",
+      "file": "Бёрнис Иконка.png",
+      "fallback": "Бёрнис Уайт Иконка.png"
+    },
+    {
+      "id": "caesar",
+      "name": "Цезарь Кинг",
+      "file": "Цезарь Иконка.png",
+      "fallback": "Цезарь Кинг Иконка.png"
+    },
+    {
+      "id": "cissia",
+      "name": "Циссия",
+      "file": "Циссия Иконка.png",
+      "fallback": "Циссия Иконка.png"
+    },
+    {
+      "id": "dialyn",
+      "name": "Диалинь",
+      "file": "Диалинь Иконка.png",
+      "fallback": "Диалинь Иконка.png"
+    },
+    {
+      "id": "ellen",
+      "name": "Эллен Джо",
+      "file": "Эллен Иконка.png",
+      "fallback": "Эллен Джо Иконка.png"
+    },
+    {
+      "id": "evelyn",
+      "name": "Эвелин Шевалье",
+      "file": "Эвелин Иконка.png",
+      "fallback": "Эвелин Шевалье Иконка.png"
+    },
+    {
+      "id": "grace",
+      "name": "Грейс Ховард",
+      "file": "Грейс Иконка.png",
+      "fallback": "Грейс Ховард Иконка.png"
+    },
+    {
+      "id": "harumasa",
+      "name": "Асаба Харумаса",
+      "file": "Харумаса Иконка.png",
+      "fallback": "Асаба Харумаса Иконка.png"
+    },
+    {
+      "id": "hugo",
+      "name": "Хуго Влад",
+      "file": "Хуго Иконка.png",
+      "fallback": "Хуго Влад Иконка.png"
+    },
+    {
+      "id": "jane",
+      "name": "Джейн Доу",
+      "file": "Джейн Иконка.png",
+      "fallback": "Джейн Доу Иконка.png"
+    },
+    {
+      "id": "ju-fufu",
+      "name": "Цзюй Фуфу",
+      "file": "Цзюй Фуфу Иконка.png",
+      "fallback": "Цзюй Фуфу Иконка.png"
+    },
+    {
+      "id": "koleda",
+      "name": "Коляда Белобог",
+      "file": "Коляда Иконка.png",
+      "fallback": "Коляда Белобог Иконка.png"
+    },
+    {
+      "id": "lighter",
+      "name": "Лайтер",
+      "file": "Лайтер Иконка.png",
+      "fallback": "Лайтер Иконка.png"
+    },
+    {
+      "id": "lucia",
+      "name": "Люсия Эловен",
+      "file": "Люсия Иконка.png",
+      "fallback": "Люсия Эловен Иконка.png"
+    },
+    {
+      "id": "miyabi",
+      "name": "Хосими Мияби",
+      "file": "Мияби Иконка.png",
+      "fallback": "Хосими Мияби Иконка.png"
+    },
+    {
+      "id": "nangong-yu",
+      "name": "Наньгун Юй",
+      "file": "Наньгун Юй Иконка.png",
+      "fallback": "Наньгун Юй Иконка.png"
+    },
+    {
+      "id": "nekomata",
+      "name": "Нэкомия Мана",
+      "file": "Нэкомата Иконка.png",
+      "fallback": "Нэкомия Мана Иконка.png"
+    },
+    {
+      "id": "norma",
+      "name": "Норма Холоуэлл",
+      "file": "Норма Иконка.png",
+      "fallback": "Норма Холоуэлл Иконка.png"
+    },
+    {
+      "id": "ormare",
+      "name": "Орфея Магнуссон и Магус",
+      "file": "Орфея Иконка.png",
+      "fallback": "Орфея Магнуссон и Магус Иконка.png"
+    },
+    {
+      "id": "phoenix",
+      "name": "Феникс Реффаэлла",
+      "file": "Феникс Иконка.png",
+      "fallback": "Феникс Реффаэлла Иконка.png"
+    },
+    {
+      "id": "promeia",
+      "name": "Промея",
+      "file": "Промея Иконка.png",
+      "fallback": "Промея Иконка.png"
+    },
+    {
+      "id": "qingyi",
+      "name": "Цинъи",
+      "file": "Цинъи Иконка.png",
+      "fallback": "Цинъи Иконка.png"
+    },
+    {
+      "id": "remielle",
+      "name": "Ремиэлла Дан",
+      "file": "Ремиэлла Иконка.png",
+      "fallback": "Ремиэлла Дан Иконка.png"
+    },
+    {
+      "id": "roxy",
+      "name": "Рокси Ифрита Прайс",
+      "file": "Рокси Иконка.png",
+      "fallback": "Рокси Ифрита Прайс Иконка.png"
+    },
+    {
+      "id": "seed",
+      "name": "Сид",
+      "file": "Сид Иконка.png",
+      "fallback": "Сид Иконка.png"
+    },
+    {
+      "id": "severian",
+      "name": "Севериан Лоуэлл",
+      "file": "Севериан Иконка.png",
+      "fallback": "Севериан Лоуэлл Иконка.png"
+    },
+    {
+      "id": "soldier-0-anby",
+      "name": "Солдат 0 Энби",
+      "file": "Солдат 0 Энби Иконка.png",
+      "fallback": "Солдат 0 Энби Иконка.png"
+    },
+    {
+      "id": "soldier-11",
+      "name": "Солдат 11",
+      "file": "Солдат 11 Иконка.png",
+      "fallback": "Солдат 11 Иконка.png"
+    },
+    {
+      "id": "starlight-billy",
+      "name": "Звёздный Билли",
+      "file": "Звёздный Билли Иконка.png",
+      "fallback": "Звёздный Билли Иконка.png"
+    },
+    {
+      "id": "sunna",
+      "name": "Санна",
+      "file": "Санна Иконка.png",
+      "fallback": "Санна Иконка.png"
+    },
+    {
+      "id": "trigger",
+      "name": "Гашетка",
+      "file": "Гашетка Иконка.png",
+      "fallback": "Гашетка Иконка.png"
+    },
+    {
+      "id": "yanagi",
+      "name": "Цукисиро Янаги",
+      "file": "Янаги Иконка.png",
+      "fallback": "Цукисиро Янаги Иконка.png"
+    },
+    {
+      "id": "yu-hua",
+      "name": "Укинами Юдзуха",
+      "file": "Юдзуха Иконка.png",
+      "fallback": "Укинами Юдзуха Иконка.png"
+    },
+    {
+      "id": "velina",
+      "name": "Велина Эйргид",
+      "file": "Велина Иконка.png",
+      "fallback": "Велина Эйргид Иконка.png"
+    },
+    {
+      "id": "vivian",
+      "name": "Вивиан Бэнси",
+      "file": "Вивиан Иконка.png",
+      "fallback": "Вивиан Бэнси Иконка.png"
+    },
+    {
+      "id": "lycaon",
+      "name": "Фон Ликаон",
+      "file": "Ликаон Иконка.png",
+      "fallback": "Фон Ликаон Иконка.png"
+    },
+    {
+      "id": "ye-shunguang",
+      "name": "Е Шуньгуан",
+      "file": "Е Шуньгуан Иконка.png",
+      "fallback": "Е Шуньгуан Иконка.png"
+    },
+    {
+      "id": "yidhari",
+      "name": "Йидхари Мёрфи",
+      "file": "Йидхари Иконка.png",
+      "fallback": "Йидхари Мёрфи Иконка.png"
+    },
+    {
+      "id": "yixuan",
+      "name": "Исюань",
+      "file": "Исюань Иконка.png",
+      "fallback": "Исюань Иконка.png"
+    },
+    {
+      "id": "zhao",
+      "name": "Чжао",
+      "file": "Чжао Иконка.png",
+      "fallback": "Чжао Иконка.png"
+    },
+    {
+      "id": "zhu-yuan",
+      "name": "Чжу Юань",
+      "file": "Чжу Юань Иконка.png",
+      "fallback": "Чжу Юань Иконка.png"
+    },
+    {
+      "id": "pyrois",
+      "name": "Пироис",
+      "file": "Пироис Иконка.png",
+      "fallback": "Пироис Иконка.png"
+    }
+  ],
+  "amplifiers": [
+    {
+      "id": "we-catalog-036",
+      "name": "Аккумулятор Демары II",
+      "file": "W-Engine_Demara_Battery_Mark_II_Icon.webp",
+      "fallback": "W-Engine_Demara_Battery_Mark_II_Icon.webp"
+    },
+    {
+      "id": "we-catalog-097",
+      "name": "Алая жажда",
+      "file": "W-Engine_Crimson_Thirst_Icon.webp",
+      "fallback": "W-Engine_Crimson_Thirst_Icon.webp"
+    },
+    {
+      "id": "we-catalog-001",
+      "name": "Аптечка дзансин",
+      "file": "W-Engine_Zanshin_Herb_Case_Icon.webp",
+      "fallback": "W-Engine_Zanshin_Herb_Case_Icon.webp"
+    },
+    {
+      "id": "we-catalog-015",
+      "name": "Артиллерийский ротор",
+      "file": "W-Engine_Cannon_Rotor_Icon.webp",
+      "fallback": "W-Engine_Cannon_Rotor_Icon.webp"
+    },
+    {
+      "id": "we-catalog-026",
+      "name": "Багряный гроб",
+      "file": "W-Engine_Crimson_Moon_Casket_Icon.webp",
+      "fallback": "W-Engine_Crimson_Moon_Casket_Icon.webp"
+    },
+    {
+      "id": "we-catalog-079",
+      "name": "Большой цилиндр",
+      "file": "W-Engine_Big_Cylinder_Icon.webp",
+      "fallback": "W-Engine_Big_Cylinder_Icon.webp"
+    },
+    {
+      "id": "we-catalog-069",
+      "name": "Бум-пушка",
+      "file": "W-Engine_Kaboom_the_Cannon_Icon.webp",
+      "fallback": "W-Engine_Kaboom_the_Cannon_Icon.webp"
+    },
+    {
+      "id": "we-catalog-037",
+      "name": "Бумагорезка",
+      "file": "W-Engine_Box_Cutter_Icon.webp",
+      "fallback": "W-Engine_Box_Cutter_Icon.webp"
+    },
+    {
+      "id": "we-catalog-016",
+      "name": "Бур — красная ось",
+      "file": "W-Engine_Drill_Rig_-_Red_Axis_Icon.webp",
+      "fallback": "W-Engine_Drill_Rig_-_Red_Axis_Icon.webp"
+    },
+    {
+      "id": "we-catalog-080",
+      "name": "Весеннее тепло",
+      "file": "W-Engine_Spring_Embrace_Icon.webp",
+      "fallback": "W-Engine_Spring_Embrace_Icon.webp"
+    },
+    {
+      "id": "we-catalog-027",
+      "name": "Вместилище фурчаний",
+      "file": "W-Engine_Roaring_Fur-nace_Icon.webp",
+      "fallback": "W-Engine_Roaring_Fur-nace_Icon.webp"
+    },
+    {
+      "id": "we-catalog-045",
+      "name": "Всесторонняя отточенность",
+      "file": "W-Engine_Practiced_Perfection_Icon.webp",
+      "fallback": "W-Engine_Practiced_Perfection_Icon.webp"
+    },
+    {
+      "id": "we-catalog-046",
+      "name": "Встроенный компилятор",
+      "file": "W-Engine_Fusion_Compiler_Icon.webp",
+      "fallback": "W-Engine_Fusion_Compiler_Icon.webp"
+    },
+    {
+      "id": "we-catalog-002",
+      "name": "Гость из глубин",
+      "file": "W-Engine_Deep_Sea_Visitor_Icon.webp",
+      "fallback": "W-Engine_Deep_Sea_Visitor_Icon.webp"
+    },
+    {
+      "id": "we-catalog-088",
+      "name": "Грозный страж",
+      "file": "W-Engine_Wrathful_Vajra_Icon.webp",
+      "fallback": "W-Engine_Wrathful_Vajra_Icon.webp"
+    },
+    {
+      "id": "we-catalog-017",
+      "name": "Домработница",
+      "file": "W-Engine_Housekeeper_Icon.webp",
+      "fallback": "W-Engine_Housekeeper_Icon.webp"
+    },
+    {
+      "id": "we-catalog-038",
+      "name": "Драгоценная окаменелость",
+      "file": "W-Engine_Precious_Fossilized_Core_Icon.webp",
+      "fallback": "W-Engine_Precious_Fossilized_Core_Icon.webp"
+    },
+    {
+      "id": "we-catalog-048",
+      "name": "Душа в доспехах",
+      "file": "W-Engine_Angel_in_the_Shell_Icon.webp",
+      "fallback": "W-Engine_Angel_in_the_Shell_Icon.webp"
+    },
+    {
+      "id": "we-catalog-092",
+      "name": "Жарево заката",
+      "file": "W-Engine_Grill_O%27Wisp_Icon.webp",
+      "fallback": "W-Engine_Grill_O%27Wisp_Icon.webp"
+    },
+    {
+      "id": "we-catalog-049",
+      "name": "Заострённые шипы",
+      "file": "W-Engine_Sharpened_Stinger_Icon.webp",
+      "fallback": "W-Engine_Sharpened_Stinger_Icon.webp"
+    },
+    {
+      "id": "we-catalog-070",
+      "name": "Застенчивый монстр",
+      "file": "W-Engine_Bashful_Demon_Icon.webp",
+      "fallback": "W-Engine_Bashful_Demon_Icon.webp"
+    },
+    {
+      "id": "we-catalog-081",
+      "name": "Заячья корзинка",
+      "file": "W-Engine_Bunny_Band_Icon.webp",
+      "fallback": "W-Engine_Bunny_Band_Icon.webp"
+    },
+    {
+      "id": "we-catalog-018",
+      "name": "Звезда улиц",
+      "file": "W-Engine_Street_Superstar_Icon.webp",
+      "fallback": "W-Engine_Street_Superstar_Icon.webp"
+    },
+    {
+      "id": "we-catalog-089",
+      "name": "Звёздное забрало",
+      "file": "W-Engine_Starlight_Rider_Faceplate_Icon.webp",
+      "fallback": "W-Engine_Starlight_Rider_Faceplate_Icon.webp"
+    },
+    {
+      "id": "we-catalog-019",
+      "name": "Звёздный двигатель",
+      "file": "W-Engine_Starlight_Engine_Icon.webp",
+      "fallback": "W-Engine_Starlight_Engine_Icon.webp"
+    },
+    {
+      "id": "we-catalog-028",
+      "name": "Звонок из прошлого",
+      "file": "W-Engine_Yesterday_Calls_Icon.webp",
+      "fallback": "W-Engine_Yesterday_Calls_Icon.webp"
+    },
+    {
+      "id": "we-catalog-020",
+      "name": "Златоцвет",
+      "file": "W-Engine_Gilded_Blossom_Icon.webp",
+      "fallback": "W-Engine_Gilded_Blossom_Icon.webp"
+    },
+    {
+      "id": "we-catalog-071",
+      "name": "Кадр на память",
+      "file": "W-Engine_Slice_of_Time_Icon.webp",
+      "fallback": "W-Engine_Slice_of_Time_Icon.webp"
+    },
+    {
+      "id": "we-catalog-082",
+      "name": "Кинопроектор",
+      "file": "W-Engine_Reel_Projector_Icon.webp",
+      "fallback": "W-Engine_Reel_Projector_Icon.webp"
+    },
+    {
+      "id": "we-catalog-090",
+      "name": "Клетка Небесной птицы",
+      "file": "W-Engine_Qingming_Birdcage_Icon.webp",
+      "fallback": "W-Engine_Qingming_Birdcage_Icon.webp"
+    },
+    {
+      "id": "we-catalog-039",
+      "name": "Клокочущий котелок",
+      "file": "W-Engine_The_Simmering_Pot_Icon.webp",
+      "fallback": "W-Engine_The_Simmering_Pot_Icon.webp"
+    },
+    {
+      "id": "we-catalog-077",
+      "name": "Клыки ярости",
+      "file": "W-Engine_Tusks_of_Fury_Icon.webp",
+      "fallback": "W-Engine_Tusks_of_Fury_Icon.webp"
+    },
+    {
+      "id": "we-catalog-091",
+      "name": "Колыбель Кракена",
+      "file": "W-Engine_Kraken%27s_Cradle_Icon.webp",
+      "fallback": "W-Engine_Kraken%27s_Cradle_Icon.webp"
+    },
+    {
+      "id": "we-catalog-064",
+      "name": "Колыбель плача",
+      "file": "W-Engine_Weeping_Cradle_Icon.webp",
+      "fallback": "W-Engine_Weeping_Cradle_Icon.webp"
+    },
+    {
+      "id": "we-catalog-098",
+      "name": "Котик удачи",
+      "file": "W-Engine_Catty_Luck_Icon.webp",
+      "fallback": "W-Engine_Catty_Luck_Icon.webp"
+    },
+    {
+      "id": "we-catalog-099",
+      "name": "Кроветворный ларец",
+      "file": "W-Engine_Bloodmarrow_Coffer_Icon.webp",
+      "fallback": "W-Engine_Bloodmarrow_Coffer_Icon.webp"
+    },
+    {
+      "id": "we-catalog-050",
+      "name": "Ледяное новолуние",
+      "file": "W-Engine_Frostfall_Sickle_Icon.webp",
+      "fallback": "W-Engine_Frostfall_Sickle_Icon.webp"
+    },
+    {
+      "id": "we-catalog-021",
+      "name": "Маркато-реверб",
+      "file": "W-Engine_Marcato_Desire_Icon.webp",
+      "fallback": "W-Engine_Marcato_Desire_Icon.webp"
+    },
+    {
+      "id": "we-catalog-083",
+      "name": "Миротворец специализированный",
+      "file": "W-Engine_Peacekeeper_-_Specialized_Icon.webp",
+      "fallback": "W-Engine_Peacekeeper_-_Specialized_Icon.webp"
+    },
+    {
+      "id": "we-catalog-065",
+      "name": "Мысли в бит",
+      "file": "W-Engine_Thoughtbop_Icon.webp",
+      "fallback": "W-Engine_Thoughtbop_Icon.webp"
+    },
+    {
+      "id": "we-catalog-072",
+      "name": "Мяч для игры без правил",
+      "file": "W-Engine_Unfettered_Game_Ball_Icon.webp",
+      "fallback": "W-Engine_Unfettered_Game_Ball_Icon.webp"
+    },
+    {
+      "id": "we-catalog-029",
+      "name": "Неоновое наваждение",
+      "file": "W-Engine_Neon_Fantasies_Icon.webp",
+      "fallback": "W-Engine_Neon_Fantasies_Icon.webp"
+    },
+    {
+      "id": "we-catalog-051",
+      "name": "Ода о возвращении крыльев",
+      "file": "W-Engine_Ode_of_Resurrected_Wings_Icon.webp",
+      "fallback": "W-Engine_Ode_of_Resurrected_Wings_Icon.webp"
+    },
+    {
+      "id": "we-catalog-084",
+      "name": "Оригинальный трансформатор",
+      "file": "W-Engine_Original_Transmorpher_Icon.webp",
+      "fallback": "W-Engine_Original_Transmorpher_Icon.webp"
+    },
+    {
+      "id": "we-catalog-066",
+      "name": "Очаг грёз",
+      "file": "W-Engine_Dreamlit_Hearth_Icon.webp",
+      "fallback": "W-Engine_Dreamlit_Hearth_Icon.webp"
+    },
+    {
+      "id": "we-catalog-040",
+      "name": "Пароварка",
+      "file": "W-Engine_Steam_Oven_Icon.webp",
+      "fallback": "W-Engine_Steam_Oven_Icon.webp"
+    },
+    {
+      "id": "we-catalog-101",
+      "name": "Перо перерождения",
+      "file": "W-Engine_Plume_of_Rebirth_Icon.webp",
+      "fallback": "W-Engine_Plume_of_Rebirth_Icon.webp"
+    },
+    {
+      "id": "we-catalog-030",
+      "name": "Пламенный венец",
+      "file": "W-Engine_Blazing_Laurel_Icon.webp",
+      "fallback": "W-Engine_Blazing_Laurel_Icon.webp"
+    },
+    {
+      "id": "we-catalog-003",
+      "name": "Пламя брани",
+      "file": "W-Engine_Bellicose_Blaze_Icon.webp",
+      "fallback": "W-Engine_Bellicose_Blaze_Icon.webp"
+    },
+    {
+      "id": "we-catalog-056",
+      "name": "Плачущие близнецы",
+      "file": "W-Engine_Weeping_Gemini_Icon.webp",
+      "fallback": "W-Engine_Weeping_Gemini_Icon.webp"
+    },
+    {
+      "id": "we-catalog-052",
+      "name": "Полёт среди грёз",
+      "file": "W-Engine_Flight_of_Fancy_Icon.webp",
+      "fallback": "W-Engine_Flight_of_Fancy_Icon.webp"
+    },
+    {
+      "id": "we-catalog-031",
+      "name": "Призрачный взор",
+      "file": "W-Engine_Spectral_Gaze_Icon.webp",
+      "fallback": "W-Engine_Spectral_Gaze_Icon.webp"
+    },
+    {
+      "id": "we-catalog-004",
+      "name": "Проблеск в облаках",
+      "file": "W-Engine_Cloudcleave_Radiance_Icon.webp",
+      "fallback": "W-Engine_Cloudcleave_Radiance_Icon.webp"
+    },
+    {
+      "id": "we-catalog-093",
+      "name": "Радиопрогулка",
+      "file": "W-Engine_Radiowave_Journey_Icon.webp",
+      "fallback": "W-Engine_Radiowave_Journey_Icon.webp"
+    },
+    {
+      "id": "we-catalog-057",
+      "name": "Ревущая тачка",
+      "file": "W-Engine_Roaring_Ride_Icon.webp",
+      "fallback": "W-Engine_Roaring_Ride_Icon.webp"
+    },
+    {
+      "id": "we-catalog-022",
+      "name": "Реплика Звёздного двигателя",
+      "file": "W-Engine_Starlight_Engine_Replica_Icon.webp",
+      "fallback": "W-Engine_Starlight_Engine_Replica_Icon.webp"
+    },
+    {
+      "id": "we-catalog-005",
+      "name": "Рептилокатор",
+      "file": "W-Engine_Serpentine_Seeker_Icon.webp",
+      "fallback": "W-Engine_Serpentine_Seeker_Icon.webp"
+    },
+    {
+      "id": "we-catalog-006",
+      "name": "Рукотворное сердце",
+      "file": "W-Engine_Cordis_Germina_Icon.webp",
+      "fallback": "W-Engine_Cordis_Germina_Icon.webp"
+    },
+    {
+      "id": "we-catalog-032",
+      "name": "Сдержанность",
+      "file": "W-Engine_The_Restrained_Icon.webp",
+      "fallback": "W-Engine_The_Restrained_Icon.webp"
+    },
+    {
+      "id": "we-catalog-067",
+      "name": "Семь уловок тануки",
+      "file": "W-Engine_Metanukimorphosis_Icon.webp",
+      "fallback": "W-Engine_Metanukimorphosis_Icon.webp"
+    },
+    {
+      "id": "we-catalog-007",
+      "name": "Сера",
+      "file": "W-Engine_The_Brimstone_Icon.webp",
+      "fallback": "W-Engine_The_Brimstone_Icon.webp"
+    },
+    {
+      "id": "we-catalog-078",
+      "name": "Сладковатая зайка",
+      "file": "W-Engine_Half-Sugar_Bunny_Icon.webp",
+      "fallback": "W-Engine_Half-Sugar_Bunny_Icon.webp"
+    },
+    {
+      "id": "we-catalog-009",
+      "name": "Стальная лапа",
+      "file": "W-Engine_Steel_Cushion_Icon.webp",
+      "fallback": "W-Engine_Steel_Cushion_Icon.webp"
+    },
+    {
+      "id": "we-catalog-033",
+      "name": "Старший ассистент",
+      "file": "W-Engine_Chief_Sidekick_Icon.webp",
+      "fallback": "W-Engine_Chief_Sidekick_Icon.webp"
+    },
+    {
+      "id": "we-catalog-068",
+      "name": "Стильная штучка",
+      "file": "W-Engine_Elegant_Vanity_Icon.webp",
+      "fallback": "W-Engine_Elegant_Vanity_Icon.webp"
+    },
+    {
+      "id": "we-catalog-010",
+      "name": "Струны ночи",
+      "file": "W-Engine_Heartstring_Nocturne_Icon.webp",
+      "fallback": "W-Engine_Heartstring_Nocturne_Icon.webp"
+    },
+    {
+      "id": "we-catalog-073",
+      "name": "Сундук сокровищ",
+      "file": "W-Engine_The_Vault_Icon.webp",
+      "fallback": "W-Engine_The_Vault_Icon.webp"
+    },
+    {
+      "id": "we-catalog-058",
+      "name": "Тадам-барабан",
+      "file": "W-Engine_Boisterous_Echoes_Icon.webp",
+      "fallback": "W-Engine_Boisterous_Echoes_Icon.webp"
+    },
+    {
+      "id": "we-catalog-053",
+      "name": "Ткач времени",
+      "file": "W-Engine_Timeweaver_Icon.webp",
+      "fallback": "W-Engine_Timeweaver_Icon.webp"
+    },
+    {
+      "id": "we-catalog-094",
+      "name": "Треножник поднебесья",
+      "file": "W-Engine_Cauldron_of_Clarity_Icon.webp",
+      "fallback": "W-Engine_Cauldron_of_Clarity_Icon.webp"
+    },
+    {
+      "id": "we-catalog-085",
+      "name": "Триграмма Гром",
+      "file": "W-Engine_Tremor_Trigram_Vessel_Icon.webp",
+      "fallback": "W-Engine_Tremor_Trigram_Vessel_Icon.webp"
+    },
+    {
+      "id": "we-catalog-059",
+      "name": "Тропический гурман",
+      "file": "W-Engine_Rainforest_Gourmet_Icon.webp",
+      "fallback": "W-Engine_Rainforest_Gourmet_Icon.webp"
+    },
+    {
+      "id": "we-catalog-011",
+      "name": "Тысяча затмений",
+      "file": "W-Engine_Myriad_Eclipse_Icon.webp",
+      "fallback": "W-Engine_Myriad_Eclipse_Icon.webp"
+    },
+    {
+      "id": "we-catalog-012",
+      "name": "Усмиритель беспорядков VI",
+      "file": "W-Engine_Riot_Suppressor_Mark_VI_Icon.webp",
+      "fallback": "W-Engine_Riot_Suppressor_Mark_VI_Icon.webp"
+    },
+    {
+      "id": "we-catalog-013",
+      "name": "Ход конём",
+      "file": "W-Engine_Knight%27s_Extolment_Icon.webp",
+      "fallback": "W-Engine_Knight%27s_Extolment_Icon.webp"
+    },
+    {
+      "id": "we-catalog-054",
+      "name": "Храм вьюги",
+      "file": "W-Engine_Hailstorm_Shrine_Icon.webp",
+      "fallback": "W-Engine_Hailstorm_Shrine_Icon.webp"
+    },
+    {
+      "id": "we-catalog-034",
+      "name": "Чайник нефритовой чистоты",
+      "file": "W-Engine_Ice-Jade_Teapot_Icon.webp",
+      "fallback": "W-Engine_Ice-Jade_Teapot_Icon.webp"
+    },
+    {
+      "id": "we-catalog-014",
+      "name": "Чистота утраты",
+      "file": "W-Engine_Severed_Innocence_Icon.webp",
+      "fallback": "W-Engine_Severed_Innocence_Icon.webp"
+    },
+    {
+      "id": "we-catalog-095",
+      "name": "Шар-головоломка",
+      "file": "W-Engine_Puzzle_Sphere_Icon.webp",
+      "fallback": "W-Engine_Puzzle_Sphere_Icon.webp"
+    },
+    {
+      "id": "we-catalog-055",
+      "name": "Шейкер-огнемейкер",
+      "file": "W-Engine_Flamemaker_Shaker_Icon.webp",
+      "fallback": "W-Engine_Flamemaker_Shaker_Icon.webp"
+    },
+    {
+      "id": "we-catalog-035",
+      "name": "Шестерни адского пламени",
+      "file": "W-Engine_Hellfire_Gears_Icon.webp",
+      "fallback": "W-Engine_Hellfire_Gears_Icon.webp"
+    },
+    {
+      "id": "we-catalog-041",
+      "name": "Шестизарядник",
+      "file": "W-Engine_Six_Shooter_Icon.webp",
+      "fallback": "W-Engine_Six_Shooter_Icon.webp"
+    },
+    {
+      "id": "we-catalog-060",
+      "name": "Электроблеск для губ",
+      "file": "W-Engine_Electro-Lip_Gloss_Icon.webp",
+      "fallback": "W-Engine_Electro-Lip_Gloss_Icon.webp"
+    }
+  ]
+}
