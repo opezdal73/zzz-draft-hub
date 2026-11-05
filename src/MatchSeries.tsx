@@ -292,44 +292,20 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
     <h3>Отряды · игра {game}</h3>
     <div className="series-shared-columns">{(['one','two'] as const).map(which => {
       const allDrafted = draftedIdsForSide(which);
-      const slots = storedSlotsFor(game, which);
-      const assigned = new Set(slots.map(slot => slot.agent_id));
+      const teamSlots = game === squadGame && which === side ? slots : storedSlotsFor(game, which);
+      const assigned = new Set(teamSlots.map(slot => slot.agent_id));
       const label = which === 'one' ? seriesPlayerOneName : seriesPlayerTwoName;
       const playerSnapshot = which === 'one' ? snapshotOne : snapshotTwo;
-      const engineTotal = slots.reduce((sum,slot)=>{const engine=costEngines.find(item=>item.id===slot.engine_id);const agent=costAgents.find(item=>item.id===slot.agent_id);if(!engine)return sum;const copyNumber=Number(slot.engine_copy_key?.split(':').pop())||1;const level=getEngineCopyAwakening(playerSnapshot?.w_engine_levels,slot.engine_id,copyNumber,engine);return sum+getWEngineCost(engine,agent,level);},0);
+      const engineTotal = teamSlots.reduce((sum,slot)=>{const engine=costEngines.find(item=>item.id===slot.engine_id);const agent=costAgents.find(item=>item.id===slot.agent_id);if(!engine)return sum;const copyNumber=Number(slot.engine_copy_key?.split(':').pop())||1;const level=getEngineCopyAwakening(playerSnapshot?.w_engine_levels,slot.engine_id,copyNumber,engine);return sum+getWEngineCost(engine,agent,level);},0);
       const readyForPlayer = game===1 ? Boolean(series[which==='one'?'ready_one':'ready_two']) : Boolean(series[which==='one'?'game2_squads_ready_one':'game2_squads_ready_two']);
+      const canEdit = game === squadGame && which === side && !squadLocked;
       return <div className={`series-shared-player side-${which} ${which===side?'is-own':''}`} key={which}><h4>{label}<span>{which === side ? 'ВАША СТОРОНА' : 'СОПЕРНИК'}</span></h4>
-        {([1,2] as const).map(squad => {const members=slots.filter(slot=>slot.squad===squad).sort((a,b)=>compareBySpecialty(avatarOf(a.agent_id)??{name:a.agent_id},avatarOf(b.agent_id)??{name:b.agent_id}));return <div className="series-shared-squad" key={squad}><div className="series-shared-squad-head"><b>0{squad} · ОТРЯД</b><span>{members.length}/{SQUAD_SIZE}</span></div><div className="series-shared-cards">{Array.from({length:SQUAD_SIZE},(_,index)=>{const slot=members[index];if(!slot)return <span className="series-shared-slot empty" key={`empty-${squad}-${index}`}><b>+</b></span>;const agent=avatarOf(slot.agent_id);const engine=costEngines.find(item=>item.id===slot.engine_id);return <span className="series-shared-slot filled" key={slot.agent_id}><img src={getAgentIconUrl(slot.agent_id)} data-fallback={agent?.imageFallbackUrl} alt="" onError={hideBrokenImage}/><b>{nameOf(slot.agent_id)}</b><small>{agent?.specialty??'Класс не указан'}{engine?` · ${engine.name}`:''}</small></span>;})}</div></div>;})}
+        {([1,2] as const).map(squad => {const members=teamSlots.filter(slot=>slot.squad===squad).sort((a,b)=>compareBySpecialty(avatarOf(a.agent_id)??{name:a.agent_id},avatarOf(b.agent_id)??{name:b.agent_id}));return <div className="series-shared-squad" key={squad}><div className="series-shared-squad-head"><b>0{squad} · ОТРЯД</b><span>{members.length}/{SQUAD_SIZE}</span></div><div className="series-shared-cards">{Array.from({length:SQUAD_SIZE},(_,index)=>{const slot=members[index];if(!slot)return <div className="series-shared-slot empty" key={`empty-${squad}-${index}`}><b>+</b>{canEdit&&<select aria-label={`Добавить агента в отряд ${squad}`} value="" disabled={busy||allDrafted.filter(id=>!assigned.has(id)).length===0} onChange={e=>{const id=e.target.value;if(id)commitSlots(placeAgent(teamSlots,draftedIds,id,squad));}}><option value="">Добавить агента</option>{allDrafted.filter(id=>!assigned.has(id)).map(id=><option key={id} value={id}>{nameOf(id)}</option>)}</select>}</div>;const agent=avatarOf(slot.agent_id);const engine=costEngines.find(item=>item.id===slot.engine_id);const engineCopy=availableEngineCopies.find(item=>item.key===slot.engine_copy_key);const other:SquadNumber=squad===1?2:1;const otherFull=squadCount(teamSlots,other)>=SQUAD_SIZE;return <div className={`series-shared-slot filled ${canEdit?'editable':''}`} key={slot.agent_id}><img className="series-shared-agent-image" src={getAgentIconUrl(slot.agent_id)} data-fallback={agent?.imageFallbackUrl} alt="" onError={hideBrokenImage}/><div className="series-shared-slot-content"><b title={agent?.name}>{nameOf(slot.agent_id)}</b><small>{agent?.specialty??'Класс не указан'}</small>{engine&&<span className="series-shared-engine-chip">{engine.imageUrl&&<img src={engine.imageUrl} data-fallback={engine.imageFallbackUrl} alt="" onError={hideBrokenImage}/>}<small>{engine.name} · Р{engineCopy?.level??1} · {engineCostFor(slot.agent_id,engine.id,slot.engine_copy_key)} кост.</small></span>}<select aria-label={`Амплификатор: ${nameOf(slot.agent_id)}`} value={slot.engine_copy_key||''} disabled={!canEdit||availableEngineCopies.length===0} onChange={e=>{const copy=availableEngineCopies.find(item=>item.key===e.target.value);commitSlots(setEngine(teamSlots,slot.agent_id,copy?.id||'',copy?.key||''));}}><option value="">Без амплификатора</option>{availableEngineCopies.map(copy=>{const used=teamSlots.some(s=>s.agent_id!==slot.agent_id&&s.engine_copy_key===copy.key);return <option key={copy.key} value={copy.key} disabled={used}>{copy.engine.name} · Р{copy.level} · {engineCostFor(slot.agent_id,copy.id,copy.key)} кост.{used?' · уже назначен':''}</option>;})}</select></div>{canEdit&&<div className="series-shared-slot-actions"><button type="button" title={otherFull?`Отряд ${other} заполнен`:`Перенести в отряд ${other}`} aria-label={`Перенести ${nameOf(slot.agent_id)} в отряд ${other}`} disabled={busy||otherFull} onClick={()=>commitSlots(moveAgent(teamSlots,slot.agent_id,other))}><ArrowLeftRight size={13}/></button><button type="button" title="Убрать из отряда" aria-label={`Убрать ${nameOf(slot.agent_id)} из отряда`} disabled={busy} onClick={()=>commitSlots(removeAgent(teamSlots,slot.agent_id))}><X size={13}/></button></div>}</div>;})}</div></div>;})}
         {game === roomGame && allDrafted.some(id=>!assigned.has(id))&&<div className="series-shared-unplaced"><b>Не распределены:</b> {allDrafted.filter(id=>!assigned.has(id)).map(id=>nameOf(id)).join(', ')}</div>}
         <div className="series-shared-footer"><span>Кост амплификаторов: <b>{engineTotal} / {budget}</b></span><strong className={readyForPlayer?'ready':''}>{readyForPlayer?'ГОТОВ':'НЕ ГОТОВ'}</strong></div>
       </div>;
     })}</div>
   </section>;
-
-  const renderSquadRow = (slot: SquadSlot, n: SquadNumber) => {
-    const agent = avatarOf(slot.agent_id);
-    const other: SquadNumber = n === 1 ? 2 : 1;
-    const otherFull = squadCount(slots, other) >= SQUAD_SIZE;
-    return (
-      <div className="squad-row" key={slot.agent_id}>
-        <div className="squad-avatar">{agent?.imageUrl && <img src={getAgentIconUrl(agent.id)} data-fallback={agent.imageFallbackUrl} alt="" onError={hideBrokenImage} />}</div>
-        <div className="squad-row-main">
-          <b title={agent?.name}>{agent?.name ?? slot.agent_id}</b>
-          <select aria-label={`Амплификатор: ${agent?.name ?? slot.agent_id}`} value={slot.engine_copy_key || ''} disabled={squadLocked || availableEngineCopies.length === 0}
-            onChange={e => { const copy=availableEngineCopies.find(item=>item.key===e.target.value); commitSlots(setEngine(slots,slot.agent_id,copy?.id||'',copy?.key||'')); }}>
-            <option value="">Без амплификатора</option>
-            {availableEngineCopies.map(copy => { const used=slots.some(s=>s.agent_id!==slot.agent_id&&s.engine_copy_key===copy.key); return <option key={copy.key} value={copy.key} disabled={used}>{copy.engine.name} · Р{copy.level} · {engineCostFor(slot.agent_id,copy.id,copy.key)} кост.{used?' · уже назначен':''}</option>; })}
-          </select>
-        </div>
-        <div className="squad-row-actions">
-          <button type="button" className="icon-btn" title={otherFull ? `Отряд ${other} заполнен` : `Перенести в отряд ${other}`} disabled={squadLocked || otherFull}
-            onClick={() => commitSlots(moveAgent(slots, slot.agent_id, other))}><ArrowLeftRight size={14} /></button>
-          <button type="button" className="icon-btn" title="Убрать из отряда" disabled={squadLocked}
-            onClick={() => commitSlots(removeAgent(slots, slot.agent_id))}><X size={14} /></button>
-        </div>
-      </div>
-    );
-  };
 
   return <div className="match-series"><div className="panel">
     <div className="panel-heading"><div><span className="eyebrow">BO2 · MATCH PREPARATION</span><h2>{heading}</h2>
@@ -346,34 +322,7 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
       </div>}
 
     {squadGame && squadHere && <>
-      <p className="muted-text squad-hint">Распредели выбранных агентов по двум отрядам — не больше {SQUAD_SIZE} в каждом. Автоматически никто не ставится. Амплификаторы необязательны; если назначишь, их общая стоимость не должна превышать {budget} коста.</p>
-      <div className="squad-board">
-        <section className="squad-pool">
-          <h4>Выбранные агенты <span>{notPlaced.length === 0 ? 'все распределены' : `осталось распределить: ${notPlaced.length}`}</span></h4>
-          <div className="squad-pool-list">
-            {notPlaced.map(id => { const agent = avatarOf(id); return (
-              <div className="squad-chip" key={id}>
-                <div className="squad-avatar">{agent?.imageUrl && <img src={getAgentIconUrl(agent.id)} data-fallback={agent.imageFallbackUrl} alt="" onError={hideBrokenImage} />}</div>
-                <b title={agent?.name}>{nameOf(id)}</b>
-                {([1, 2] as const).map(n => <button type="button" className="btn btn-secondary squad-add" key={n}
-                  disabled={squadLocked || squadCount(slots, n) >= SQUAD_SIZE}
-                  title={squadCount(slots, n) >= SQUAD_SIZE ? `Отряд ${n} заполнен` : `Поставить в отряд ${n}`}
-                  onClick={() => commitSlots(placeAgent(slots, draftedIds, id, n))}>→ {n}</button>)}
-              </div>); })}
-            {notPlaced.length === 0 && draftedIds.length > 0 && <p className="muted-text">Все агенты распределены по отрядам.</p>}
-            {draftedIds.length === 0 && <p className="muted-text">В этом драфте у тебя нет выбранных агентов.</p>}
-          </div>
-        </section>
-        <div className="squad-columns">
-          {([1, 2] as const).map(n => { const inSquad = slots.filter(s => s.squad === n); return (
-            <section className="squad-col" key={n}>
-              <h4>Отряд {n}<span className={inSquad.length >= SQUAD_SIZE ? 'full' : ''}>{inSquad.length}/{SQUAD_SIZE}</span></h4>
-              {Array.from({ length: SQUAD_SIZE }, (_, i) => inSquad[i]
-                ? renderSquadRow(inSquad[i], n)
-                : <div className="squad-slot-empty" key={`empty-${n}-${i}`}>Свободный слот</div>)}
-            </section>); })}
-        </div>
-      </div>
+      <p className="muted-text squad-hint">Распредели агентов по двум отрядам прямо в карточках выше: добавляй в пустые квадраты, выбирай амплификатор там же и меняй агента между отрядами. В каждом отряде до {SQUAD_SIZE} агентов; лимит амплификаторов — {budget} костов.</p>
       {availableEngineCopies.length === 0 && <p className="muted-text">{ownSnapshot?.id ? 'Загружаем список амплификаторов ростера…' : 'В сохранённом снимке ростера нет амплификаторов. Можно оставить всех без них и нажать «Готов».'}</p>}
       <div className="series-budget"><b>Стоимость назначенных амплификаторов: {totalCost} / {budget}</b><span>{budget - totalCost >= 0 ? `Осталось ${budget - totalCost} кост.` : `Превышение на ${totalCost - budget} кост.`}</span></div>
       <button className="btn btn-primary" disabled={busy || squadReady || !isPlayer || !readyAllowed}
