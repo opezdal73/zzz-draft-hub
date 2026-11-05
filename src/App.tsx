@@ -202,13 +202,13 @@ export default function App() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [judgeToken] = useState(() => new URLSearchParams(window.location.search).get("judge"));
   const [page, setPage] = useState(() => {
-    if (new URLSearchParams(window.location.search).has("judge")) return "drafts";
+    if (new URLSearchParams(window.location.search).has("judge") || new URLSearchParams(window.location.search).has("room")) return "drafts";
     try { const saved = localStorage.getItem(PAGE_STORAGE_KEY); return !saved || saved === "tournaments" ? "home" : saved; } catch { return "home"; }
   });
   const [globalDraftRules, setGlobalDraftRules] = useState<GlobalDraftRules>(defaultGlobalDraftRules);
   const [roleLoadedForUser, setRoleLoadedForUser] = useState("");
   const [selectedTournament, setSelectedTournament] = useState("t-1");
-  const [draftRoomToOpen, setDraftRoomToOpen] = useState<string | null>(null);
+  const [draftRoomToOpen, setDraftRoomToOpen] = useState<string | null>(() => new URLSearchParams(window.location.search).get("room"));
   const [ownedRosters, setOwnedRosters] = useState<RegisteredRoster[]>([]);
   const [joinRosterTournament, setJoinRosterTournament] = useState<Tournament | null>(null);
   const [selectedRegistrationRosterId, setSelectedRegistrationRosterId] = useState("");
