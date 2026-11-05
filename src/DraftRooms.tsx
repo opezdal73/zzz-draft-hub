@@ -123,9 +123,13 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
   };
   const loadSavedRosters = useCallback(async (userId:string) => {
     if (!supabase) return;
-    const { data, error } = await supabase.from('player_rosters').select('id,name,notes,agent_ids,w_engine_ids,agent_levels,w_engine_levels').eq('player_id', userId).order('updated_at', { ascending: false });
+    const [{ data, error }, { data: inventory }] = await Promise.all([
+      supabase.from('player_rosters').select('id,name,notes,agent_ids,w_engine_ids,agent_levels,w_engine_levels').eq('player_id', userId).order('updated_at', { ascending: false }),
+      supabase.from('player_account_inventory').select('agent_levels').eq('player_id', userId).maybeSingle(),
+    ]);
     if (error) { setMessage('Не удалось загрузить личные ростеры: ' + error.message); return; }
-    setSavedRosters((data ?? []) as SavedRoster[]);
+    const currentLevels = (inventory?.agent_levels || {}) as Record<string, number>;
+    setSavedRosters((data ?? []).map(roster => ({ ...roster, agent_levels: { ...(roster.agent_levels || {}), ...currentLevels } })) as SavedRoster[]);
   }, []);
   const loadGlobalRules = useCallback(async () => {
     if (!supabase) return;

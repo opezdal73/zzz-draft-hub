@@ -666,10 +666,14 @@ export default function App() {
     }
     if (session && supabase) {
       setRostersLoading(true);
-      const { data, error } = await supabase.from("player_rosters").select("id,name,agent_ids,w_engine_ids,agent_levels,w_engine_levels").eq("player_id", session.user.id).order("updated_at", { ascending: false });
+      const [{ data, error }, { data: inventory }] = await Promise.all([
+        supabase.from("player_rosters").select("id,name,agent_ids,w_engine_ids,agent_levels,w_engine_levels").eq("player_id", session.user.id).order("updated_at", { ascending: false }),
+        supabase.from("player_account_inventory").select("agent_levels").eq("player_id", session.user.id).maybeSingle(),
+      ]);
       setRostersLoading(false);
       if (error) { setNotice(`Не удалось загрузить ростеры: ${error.message}`); return; }
-      const choices = (data || []) as RegisteredRoster[];
+      const currentLevels = (inventory?.agent_levels || {}) as Record<string, number>;
+      const choices = (data || []).map(roster => ({ ...roster, agent_levels: { ...(roster.agent_levels || {}), ...currentLevels } })) as RegisteredRoster[];
       setOwnedRosters(choices);
       if (!choices.length) { setNotice("Сначала создай и сохрани ростер в разделе «Мои ростеры»."); return; }
       setJoinRosterTournament(t);
