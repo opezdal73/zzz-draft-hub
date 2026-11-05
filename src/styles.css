@@ -16,6 +16,8 @@
 .online-room-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 18px; }
 .online-room-actions .panel h3 { margin: 8px 0; }
 .online-room-actions .btn { margin-top: 12px; }
+.training-side-switch { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.training-side-switch > b { color: var(--muted, #aaa7b2); font-size: 12px; margin-right: 4px; }
 .code-input { text-transform: uppercase; letter-spacing: .16em; font-weight: 700; }
 .online-room-list { display: flex; flex-direction: column; gap: 8px; }
 .online-room-row { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line, #30303a); border-radius: 12px; padding: 12px; }
