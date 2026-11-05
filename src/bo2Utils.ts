@@ -6,7 +6,7 @@ export const MAX_AGENTS = SQUAD_SIZE * 2;
 export const MAX_TIMER_SECONDS = 600;
 
 export type SquadNumber = 1 | 2;
-export type SquadSlot = { agent_id: string; squad: SquadNumber; engine_id: string; engine_copy_key?: string };
+export type SquadSlot = { agent_id: string; squad: SquadNumber; slot_index?: number; engine_id: string; engine_copy_key?: string };
 
 /**
  * Turns the minutes / seconds inputs into seconds.
@@ -34,7 +34,11 @@ export function normalizeSlots(slots: SquadSlot[] | null | undefined, draftedIds
     if (out.some(s => s.agent_id === slot.agent_id)) continue;
     if (slot.squad !== 1 && slot.squad !== 2) continue;
     if (!squadHasRoom(out, slot.squad)) continue;
-    out.push({ agent_id: slot.agent_id, squad: slot.squad, engine_id: slot.engine_id || '', engine_copy_key: slot.engine_copy_key || '' });
+    const usedPositions = new Set(out.filter(item => item.squad === slot.squad).map(item => item.slot_index));
+    const requestedPosition = Number.isInteger(slot.slot_index) && slot.slot_index! >= 0 && slot.slot_index! < SQUAD_SIZE && !usedPositions.has(slot.slot_index)
+      ? slot.slot_index!
+      : Array.from({ length: SQUAD_SIZE }, (_, index) => index).find(index => !usedPositions.has(index))!;
+    out.push({ agent_id: slot.agent_id, squad: slot.squad, slot_index: requestedPosition, engine_id: slot.engine_id || '', engine_copy_key: slot.engine_copy_key || '' });
   }
   return out;
 }
@@ -46,7 +50,10 @@ export const unplacedIds = (slots: SquadSlot[], draftedIds: string[]) =>
 export function placeAgent(slots: SquadSlot[], draftedIds: string[], agentId: string, squad: SquadNumber): SquadSlot[] | null {
   if (!draftedIds.includes(agentId) || slots.some(s => s.agent_id === agentId)) return null;
   if (!squadHasRoom(slots, squad)) return null;
-  return [...slots, { agent_id: agentId, squad, engine_id: '' }];
+  const usedPositions = new Set(slots.filter(slot => slot.squad === squad).map(slot => slot.slot_index));
+  const slotIndex = Array.from({ length: SQUAD_SIZE }, (_, index) => index).find(index => !usedPositions.has(index));
+  if (slotIndex === undefined) return null;
+  return [...slots, { agent_id: agentId, squad, slot_index: slotIndex, engine_id: '' }];
 }
 
 /** Move an already placed agent to the other squad. Returns null if the target squad is full. */
@@ -55,7 +62,10 @@ export function moveAgent(slots: SquadSlot[], agentId: string, squad: SquadNumbe
   if (!current) return null;
   if (current.squad === squad) return slots;
   if (!squadHasRoom(slots, squad)) return null;
-  return slots.map(s => (s.agent_id === agentId ? { ...s, squad } : s));
+  const usedPositions = new Set(slots.filter(slot => slot.squad === squad).map(slot => slot.slot_index));
+  const slotIndex = Array.from({ length: SQUAD_SIZE }, (_, index) => index).find(index => !usedPositions.has(index));
+  if (slotIndex === undefined) return null;
+  return slots.map(s => (s.agent_id === agentId ? { ...s, squad, slot_index: slotIndex } : s));
 }
 
 /** Take an agent out of its squad (the amplifier is dropped with it). */
