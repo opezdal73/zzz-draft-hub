@@ -88,17 +88,21 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
   const usedIds = new Set((room?.actions ?? []).map(a => a.agent_id));
   const activeSideUserId = activeAction?.side === 'I1' ? room?.player_one_id : room?.player_two_id;
   const isMyTurn = Boolean(profile && activeSideUserId === profile.id);
-  const mySide = room && profile ? (room.training_mode ? (room.training_sides_swapped ? 'I2' : 'I1') : room.player_one_id === profile.id ? 'I1' : room.player_two_id === profile.id ? 'I2' : null) : null;
+  // Training BO2 swaps the roster sides in the same room. Since both room IDs
+  // belong to the trainer, derive the visible names and owner marker from this
+  // orientation instead of the duplicate player IDs.
+  const trainingSidesSwapped = Boolean(room?.training_sides_swapped) !== (Number(room?.bo2_game_number) === 2);
+  const mySide = room && profile ? (room.training_mode ? (trainingSidesSwapped ? 'I2' : 'I1') : room.player_one_id === profile.id ? 'I1' : room.player_two_id === profile.id ? 'I2' : null) : null;
   const roomOwnerName = room ? roomNicknames[room.player_one_id || ""] || (room.player_one_id === profile?.id ? profile.nickname : "Игрок 1") : "Игрок 1";
   const trainingTargetName = room ? roomNicknames[room.training_opponent_id || ""] || "Тренировочный соперник" : "Тренировочный соперник";
   const playerOneName = room ? room.training_mode
-    ? (room.training_sides_swapped ? trainingTargetName : roomOwnerName)
+    ? (trainingSidesSwapped ? trainingTargetName : roomOwnerName)
     : roomNicknames[room.player_one_id || ""] || (room.player_one_id === profile?.id ? profile.nickname : "Игрок 1") : "Игрок 1";
   const playerTwoName = room ? room.training_mode
-    ? (room.training_sides_swapped ? roomOwnerName : trainingTargetName)
+    ? (trainingSidesSwapped ? roomOwnerName : trainingTargetName)
     : roomNicknames[room.player_two_id || ""] || (room.player_two_id === profile?.id ? profile.nickname : "Игрок 2") : "Игрок 2";
-  const playerOneIsMe = room ? room.training_mode ? !room.training_sides_swapped : room.player_one_id === profile?.id : false;
-  const playerTwoIsMe = room ? room.training_mode ? Boolean(room.training_sides_swapped) : room.player_two_id === profile?.id : false;
+  const playerOneIsMe = room ? room.training_mode ? !trainingSidesSwapped : room.player_one_id === profile?.id : false;
+  const playerTwoIsMe = room ? room.training_mode ? trainingSidesSwapped : room.player_two_id === profile?.id : false;
 
   const canDeleteOwnedRoom = (target: typeof resumeRooms[number]) => Boolean(profile && target.host_id === profile.id && !target.tournament_id && !target.tournament_match_id && !target.bo2_parent_room_id && ['waiting', 'ready', 'active'].includes(target.status));
   const deleteRoom = async (target: Room | typeof resumeRooms[number]) => {
