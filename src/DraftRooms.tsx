@@ -396,34 +396,44 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
       {room.status==='active'&&(()=>{
         const rosterOne = room.roster_one ?? [];
         const rosterTwo = room.roster_two ?? [];
-        const pickedOne = room.actions.filter(a=>a.side==='I1' && a.action==='pick');
-        const pickedTwo = room.actions.filter(a=>a.side==='I2' && a.action==='pick');
-        const mirrorOne = room.actions.filter(a=>a.side==='I1' && a.action==='mirror');
-        const mirrorTwo = room.actions.filter(a=>a.side==='I2' && a.action==='mirror');
-        const bansOne = room.actions.filter(a=>a.side==='I1' && a.action==='ban');
-        const bansTwo = room.actions.filter(a=>a.side==='I2' && a.action==='ban');
         const ownRoster = activeAction?.side==='I1' ? rosterOne : rosterTwo;
         const opponentPicks = room.actions.filter(a=>a.action==='pick' && a.side!==activeAction?.side).map(a=>a.agent_id);
         const opponentRoster = activeAction?.side==='I1' ? rosterTwo : rosterOne;
         // Mirror pick: only an agent the opponent has picked AND that is in YOUR roster (and not mirrored by you yet).
         const eligibleMirrors = [...new Set(opponentPicks.filter(id=>ownRoster.includes(id) && !room.actions.some(a=>a.action==='mirror' && a.side===activeAction?.side && a.agent_id===id)))];
         const isMirrorStage = activeAction?.action==='mirror';
-        const ownSnapshot = activeAction?.side==='I1' ? room.roster_snapshot_one : room.roster_snapshot_two;
-        const opponentSnapshot = activeAction?.side==='I1' ? room.roster_snapshot_two : room.roster_snapshot_one;
         const effectiveAction = activeAction?.action==='ban' ? 'ban' : activeAction?.action==='mirror' && mirrorMode ? 'mirror' : 'pick';
-        // The visible pool determines whose constellation level to show. Checking whether
-        // the agent exists in a roster is ambiguous when both players own that agent.
-        const displayedSnapshot = effectiveAction==='ban' ? opponentSnapshot : ownSnapshot;
-        const draftAgentLevel = (id:string) => displayedSnapshot?.agent_levels?.[id] ?? (agents.find(a=>a.id===id)?.rank==='A'?6:0);
         // Draft pools (the server enforces the same rules in submit_draft_action):
         //  - ban: only the OPPONENT's roster;
         //  - pick: only your OWN roster;
         //  - mirror stage: your own roster; an agent the opponent has picked is a mirror pick only if it is in your roster.
         const pool = effectiveAction==='ban' ? opponentRoster : isMirrorStage ? [...new Set([...ownRoster,...eligibleMirrors])] : ownRoster;
-        const available = agents.filter(a=>pool.includes(a.id) && ((isMirrorStage && eligibleMirrors.includes(a.id)) || !usedIds.has(a.id)) && (agentClass === 'Все классы' || (a.specialty || 'Не указана') === agentClass) && (a.name.toLocaleLowerCase('ru').includes(agentSearch.toLocaleLowerCase('ru')) || a.specialty?.toLocaleLowerCase('ru').includes(agentSearch.toLocaleLowerCase('ru')))).sort(compareBySpecialty);
-        const renderSlot = (agentId:string, label:string, kind:string, index:number) => { const agent=agents.find(a=>a.id===agentId); return <div className={`draft-slot filled ${kind}`} key={`${kind}-${agentId}-${index}`} title={agent?.name ?? agentId}>{agent?.imageUrl && <img src={getAgentIconUrl(agent.id)} alt="" onError={e=>{const img=e.currentTarget;if(agent.imageFallbackUrl && img.src!==agent.imageFallbackUrl) img.src=agent.imageFallbackUrl; else img.style.display='none';}}/>}<span className="draft-slot-number">{index+1}</span><b>{agent?.name ?? agentId}</b><small>{label}</small></div>; };
-        const renderEmpty = (label:string,index:number,kind:string) => <div className={`draft-slot empty ${kind}`} key={`${kind}-empty-${index}`}><span className="draft-slot-number">{index+1}</span><b>—</b><small>{label}</small></div>;
-        const rosterSlots = (ids:string[], actions:typeof room.actions, kind:string, label:string) => { const used = actions.map(a=>a.agent_id); const shown = ids.filter(id=>used.includes(id)); const targetSide = actions===pickedOne ? 'I1' : actions===pickedTwo ? 'I2' : actions===bansOne ? 'I1' : 'I2'; const targetAction = kind==='pick-slot' ? 'pick' : kind==='mirror-slot' ? 'mirror' : 'ban'; const future = Math.max(0, room.template_snapshot.filter(s=>s.action===targetAction && s.side===targetSide).reduce((n,s)=>n+Math.max(1,Math.min(5,s.count||1)),0)-actions.length); return <div className="draft-slots">{shown.map((id,i)=>{const action=actions.find(a=>a.agent_id===id)!;return renderSlot(id,action.action==='ban'?'БАН':'ПИК',kind,i);})}{Array.from({length:future},(_,i)=>renderEmpty(label,shown.length+i,kind))}{shown.length===0&&future===0&&<div className="draft-empty-note">Пока нет действий</div>}</div>; };
+        const stepRows = (kind:'ban'|'pick') => <div className={`draft-sequence-row ${kind}`}>
+          <div className="draft-sequence-player">{flattenedSteps.map((step,index)=>({step,index})).filter(({step})=>kind==='ban'?step.action==='ban':step.action!=='ban').filter(({step})=>step.side==='I1').map(({step,index})=><span key={index} className={`draft-sequence-chip ${index<room.current_step?'done':''} ${index===room.current_step?'current':''} ${step.action==='mirror'?'mirror':''}`} title={`${index+1}. ${actionName(step.action)}`}>{index+1}</span>)}</div>
+          <b>{kind==='ban'?'БАНЫ':'ПИКИ'}</b>
+          <div className="draft-sequence-player right">{flattenedSteps.map((step,index)=>({step,index})).filter(({step})=>kind==='ban'?step.action==='ban':step.action!=='ban').filter(({step})=>step.side==='I2').map(({step,index})=><span key={index} className={`draft-sequence-chip ${index<room.current_step?'done':''} ${index===room.current_step?'current':''} ${step.action==='mirror'?'mirror':''}`} title={`${index+1}. ${actionName(step.action)}`}>{index+1}</span>)}</div>
+        </div>;
+        const renderRosterPanel = (sideId:'I1'|'I2', name:string, ids:string[], snapshot:Room['roster_snapshot_one']) => {
+          const lowerSearch=agentSearch.toLocaleLowerCase('ru');
+          const entries=ids.map(id=>agents.find(a=>a.id===id)).filter((a):a is (typeof agents)[number]=>Boolean(a)).filter(a=>(agentClass==='Все классы'||(a.specialty||'Не указана')===agentClass)&&(a.name.toLocaleLowerCase('ru').includes(lowerSearch)||(a.specialty||'').toLocaleLowerCase('ru').includes(lowerSearch))).sort(compareBySpecialty);
+          return <section className={`draft-roster-side ${activeAction?.side===sideId?'is-active':''}`} key={sideId}>
+            <header><div><span className="draft-side-caption">{sideId==='I1'?'СТОРОНА 1':'СТОРОНА 2'}</span><h3>{name}</h3></div><span>{ids.length} агентов</span></header>
+            <div className="draft-class-list">{specialtyOrder.map(specialty=>{const group=entries.filter(a=>(a.specialty||'Не указана')===specialty);if(!group.length)return null;return <section className="draft-class-row" key={specialty}><h4>{specialty}</h4><div>{group.map(agent=>{
+              const level=snapshot?.agent_levels?.[agent.id]??(agent.rank==='A'?6:0);
+              const move=room.actions.find(a=>a.agent_id===agent.id);
+              const wasPicked=move&&(move.action==='pick'||move.action==='mirror')&&move.side===sideId;
+              const wasBanned=move?.action==='ban'&&move.side!==sideId;
+              const selectable=pool.includes(agent.id)&&((isMirrorStage&&eligibleMirrors.includes(agent.id))||!usedIds.has(agent.id));
+              const canClick=selectable&&Boolean(activeAction)&&(isMyTurn||Boolean(activeJudgeToken))&&!busy&&!room.is_paused;
+              const actionOverride=activeAction?.action==='ban'?undefined:isMirrorStage?(eligibleMirrors.includes(agent.id)?'mirror':'pick'):activeAction?.action==='pick'?'pick':undefined;
+              return <button type="button" className={`draft-roster-card ${selectable?'selectable':''} ${canClick?'can-click':''} ${wasPicked?'was-picked':''} ${wasBanned?'was-banned':''}`} key={agent.id} disabled={!canClick} onClick={()=>void makeMove(agent.id,actionOverride)} title={`${agent.name} · ${specialty} · М${level}`}>
+                <img src={getAgentIconUrl(agent.id)} data-fallback={agent.imageFallbackUrl} alt="" onError={e=>{const img=e.currentTarget;if(agent.imageFallbackUrl&&img.src!==agent.imageFallbackUrl)img.src=agent.imageFallbackUrl;else img.style.display='none';}}/>
+                <span className={`draft-rank-mini ${agent.rank==='S'?'rank-s':'rank-a'}`}>{agent.rank}</span><b>М{level}</b>
+                {wasPicked&&<small>{move?.action==='mirror'?'ЗЕРК.':'ПИК'}</small>}{wasBanned&&<small>БАН</small>}
+              </button>;
+            })}</div></section>;})}</div>
+          </section>;
+        };
         return <div className="draft-board">
           {activeJudgeToken && <div className="notice-box"><Gavel size={17}/><p><b>Режим судьи.</b> Вы выполняете текущий ход за {activeAction?.side==='I1'?playerOneName:playerTwoName}. Доступны действия от лица обеих сторон.</p></div>}
           <div className="draft-matchbar">
@@ -431,27 +441,9 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
             <div className="draft-turn-center"><span className="draft-live-dot"/><b>{activeAction ? (activeAction.action==='ban'?'БАН':activeAction.action==='mirror'?'СТАДИЯ ЗЕРКАЛЬНОГО ПИКА':'ПИК') : 'ЗАВЕРШЕНО'}</b><strong>{Math.min(room.current_step+1,flattenedSteps.length)}<small> / {flattenedSteps.length}</small></strong><small>{activeAction ? (isMyTurn?'ТВОЙ ХОД':`ХОД СОПЕРНИКА · ${activeAction.side==='I1'?playerOneName.toLocaleUpperCase('ru-RU'):playerTwoName.toLocaleUpperCase('ru-RU')}`) : 'Матч завершён'}</small></div>
             <div className={`draft-player right ${activeAction?.side==='I2'?'turn-active':''}`}><div><b>{playerTwoName}</b><small>{rosterTwo.length} персонажей · {rosterTwo.reduce((sum,id)=>sum+(agentCost(id, room.roster_snapshot_two?.agent_levels?.[id] ?? (agents.find(a=>a.id===id)?.rank==='A'?6:0))??0),0)} кост.</small></div><div className="draft-player-avatar opponent">2</div></div>
           </div>
-          <div className="draft-shared-rosters" aria-label="Ростеры обоих игроков">
-            {([{ side: 'I1' as const, name: playerOneName, ids: rosterOne, snapshot: room.roster_snapshot_one }, { side: 'I2' as const, name: playerTwoName, ids: rosterTwo, snapshot: room.roster_snapshot_two }]).map(player => <section className={`draft-shared-roster ${activeAction?.side===player.side?'is-active':''}`} key={player.side}>
-              <h3>{player.name}<span>{player.ids.length} агентов</span></h3>
-              <div>{[...player.ids].map(id=>agents.find(a=>a.id===id)).filter((a):a is (typeof agents)[number]=>Boolean(a)).sort(compareBySpecialty).map(agent=>{const level=player.snapshot?.agent_levels?.[agent.id] ?? (agent.rank==='A'?6:0);return <span className="draft-roster-agent" key={agent.id} title={`${agent.name} · ${agent.specialty??'Класс не указан'} · М${level}`}><img src={getAgentIconUrl(agent.id)} data-fallback={agent.imageFallbackUrl} alt="" onError={e=>{const img=e.currentTarget;if(agent.imageFallbackUrl&&img.src!==agent.imageFallbackUrl)img.src=agent.imageFallbackUrl;else img.style.display='none';}}/><b>{agent.name}</b><small>{agent.specialty??'Класс не указан'} · М{level}</small></span>;})}</div>
-            </section>)}
-          </div>
-          <div className="draft-sides-board">
-            <section className="draft-side-column"><div className="draft-zone-title ban-title"><Ban size={15}/> БАНЫ ИГРОКА 1 <span>{bansOne.length}</span></div>{rosterSlots(bansOne.map(a=>a.agent_id), bansOne, 'ban-slot','ожидает бана')}</section>
-            <section className="draft-side-column"><div className="draft-zone-title ban-title"><Ban size={15}/> БАНЫ ИГРОКА 2 <span>{bansTwo.length}</span></div>{rosterSlots(bansTwo.map(a=>a.agent_id), bansTwo, 'ban-slot','ожидает бана')}</section>
-          </div>
-          <div className="draft-sides-board picks-board">
-            <section className="draft-side-column"><div className="draft-zone-title pick-title"><Swords size={15}/> ПИКИ ИГРОКА 1 <span>{pickedOne.length}</span></div>{rosterSlots(pickedOne.map(a=>a.agent_id), pickedOne, 'pick-slot','ожидает пика')}</section>
-            <section className="draft-side-column"><div className="draft-zone-title pick-title"><Swords size={15}/> ПИКИ ИГРОКА 2 <span>{pickedTwo.length}</span></div>{rosterSlots(pickedTwo.map(a=>a.agent_id), pickedTwo, 'pick-slot','ожидает пика')}</section>
-          </div>
-          <div className="draft-sides-board mirror-picks-board">
-            <section className="draft-side-column"><div className="draft-zone-title mirror-title"><Swords size={15}/> ЗЕРКАЛЬНЫЕ ПИКИ ИГРОКА 1 <span>{mirrorOne.length}</span></div>{rosterSlots(mirrorOne.map(a=>a.agent_id), mirrorOne, 'mirror-slot','ожидает зеркального пика')}</section>
-            <section className="draft-side-column"><div className="draft-zone-title mirror-title"><Swords size={15}/> ЗЕРКАЛЬНЫЕ ПИКИ ИГРОКА 2 <span>{mirrorTwo.length}</span></div>{rosterSlots(mirrorTwo.map(a=>a.agent_id), mirrorTwo, 'mirror-slot','ожидает зеркального пика')}</section>
-          </div>
-          <div className="draft-chooser"><div className="draft-chooser-heading"><div><span className="eyebrow">ПУЛ ПЕРСОНАЖЕЙ</span><h3>{activeAction ? (activeAction.action==='ban'?'Выбери персонажа для бана':effectiveAction==='mirror'?'Выбери персонажа для зеркального пика':'Выбери персонажа для пика') : 'Драфт завершён'}</h3><p>{isMyTurn?(activeAction?.action==='ban'?'Выбери персонажа из ростера соперника для бана.':isMirrorStage?'На стадии зеркального пика выбери агента из своего ростера или переключись на зеркальные пики соперника.':'Для пика доступны только персонажи из твоего ростера. Персонажей соперника можно банить.'):activeAction?'Ожидаем действие второго игрока.':'Все действия выполнены.'}</p></div><div className="draft-search-controls"><label className="draft-search"><span>⌕</span><input value={agentSearch} onChange={e=>setAgentSearch(e.target.value)} placeholder="Поиск персонажа…" aria-label="Поиск персонажа"/></label><select className="select" value={agentClass} onChange={e=>setAgentClass(e.target.value)} aria-label="Фильтр по классу персонажа"><option>Все классы</option>{specialtyOrder.map(s=><option key={s}>{s}</option>)}</select></div></div>
-            <div className="draft-agent-gallery">{available.map(a=><button className="draft-agent-card" key={a.id} disabled={(!isMyTurn&&!activeJudgeToken)||busy||!activeAction||room.is_paused} onClick={()=>void makeMove(a.id, isMirrorStage ? (eligibleMirrors.includes(a.id) ? 'mirror' : 'pick') : activeAction?.action==='pick' ? 'pick' : undefined)} title={`${a.name} · ${a.specialty??'Специальность не указана'}`}><div className="draft-agent-art">{a.imageUrl?<img src={getAgentIconUrl(a.id)} data-fallback={a.imageFallbackUrl} alt="" onError={e=>{const img=e.currentTarget;if(a.imageFallbackUrl && img.src!==a.imageFallbackUrl) img.src=a.imageFallbackUrl; else img.style.display='none';}}/>:<span>{a.avatar}</span>}<span className={`draft-rank ${a.rank==='S'?'rank-s':'rank-a'}`}>{a.rank}</span><span className="draft-cost">М{draftAgentLevel(a.id)}</span></div><div className="draft-agent-meta"><b>{a.name}</b><small>{isMirrorStage&&eligibleMirrors.includes(a.id)?'Зеркальный пик · ':''}{a.specialty??'Агент'} · М{draftAgentLevel(a.id)}</small></div></button>)}{available.length===0&&<p className="muted-text">Нет доступных персонажей для этого действия.</p>}</div>
-          </div>
+          <div className="draft-sequence" aria-label="Последовательность ходов драфта">{stepRows('ban')}{stepRows('pick')}</div>
+          <div className="draft-pool-toolbar"><div><span className="eyebrow">РОСТЕРЫ МАТЧА</span><h3>{activeAction ? (activeAction.action==='ban'?'Выбери агента для бана':isMirrorStage?'Выбери агента для пика или зеркального пика':'Выбери агента для пика') : 'Драфт завершён'}</h3><p>{isMyTurn?(activeAction?.action==='ban'?'Бан — из ростера соперника. Пики — из своего.':isMirrorStage?'Доступные зеркальные пики отмечены ярче.':'Можно выбрать только агента из своего ростера.') : activeAction ? 'Ожидаем ход соперника. Ростеры и действия видны обеим сторонам.' : 'Все действия выполнены.'}</p></div><div className="draft-search-controls"><label className="draft-search"><span>⌕</span><input value={agentSearch} onChange={e=>setAgentSearch(e.target.value)} placeholder="Поиск агента…" aria-label="Поиск агента"/></label><select className="select" value={agentClass} onChange={e=>setAgentClass(e.target.value)} aria-label="Фильтр по классу агента"><option>Все классы</option>{specialtyOrder.map(s=><option key={s}>{s}</option>)}</select></div></div>
+          <div className="draft-roster-arena" aria-label="Ростеры обоих игроков">{renderRosterPanel('I1',playerOneName,rosterOne,room.roster_snapshot_one)}<div className="draft-roster-divider"><span>{activeAction?.action==='ban'?'БАН':activeAction?.action==='mirror'?'ЗЕРКАЛЬНЫЙ ПИК':'ПИК'}</span><i/></div>{renderRosterPanel('I2',playerTwoName,rosterTwo,room.roster_snapshot_two)}</div>
           <details className="draft-history-modern"><summary>История ходов <span>{room.actions.length}</span></summary><div>{room.actions.map((a,i)=><div className="draft-history-row" key={`${a.step_index}-${a.agent_id}-${i}`}><span>{i+1}</span><b>{a.side==='I1'?playerOneName:playerTwoName}</b><span>{actionName(a.action)}</span><strong>{agents.find(x=>x.id===a.agent_id)?.name??a.agent_id}</strong></div>)}</div></details>
         </div>;
       })()}
