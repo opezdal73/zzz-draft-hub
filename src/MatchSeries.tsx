@@ -3,6 +3,7 @@ import { ArrowLeftRight, CheckCircle2, LockKeyhole, Plus, Swords, Trophy, X } fr
 import { getAgentIconUrl, initialAgents, initialWEngines } from './data';
 import { getWEngineCost } from './costUtils';
 import { engineCopyLevelKey, getEngineCopyAwakening } from './engineCopies';
+import { compareBySpecialty, specialtyOrder } from './catalogUtils';
 import { supabase } from './supabase';
 import {
   MAX_AGENTS, MAX_TIMER_SECONDS, SQUAD_SIZE, canMarkReady, moveAgent, normalizeSlots, parseTimer,
@@ -51,6 +52,9 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
   const [restartDraft, setRestartDraft] = useState({ free: '2', smallCount: '2', smallPenalty: '5', bigPenalty: '300' });
   const [judgeSide, setJudgeSide] = useState<'one'|'two'>('one');
   const [enginePickerAgentId, setEnginePickerAgentId] = useState<string | null>(null);
+  const [enginePickerSearch, setEnginePickerSearch] = useState('');
+  const [enginePickerSpecialty, setEnginePickerSpecialty] = useState('Все классы');
+  const [enginePickerRank, setEnginePickerRank] = useState('Все ранги');
   const isJudge = Boolean(judgeToken);
 
   // Both games share the same room. Game 2 swaps room positions, while the series keeps the original player order.
@@ -124,8 +128,15 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
     return [{ id: engineId, key, level, engine }];
   });
   const sortedEngineCopies = [...availableEngineCopies].sort((a, b) =>
-    a.engine.name.localeCompare(b.engine.name, 'ru') || b.level - a.level || a.key.localeCompare(b.key),
+    compareBySpecialty(a.engine, b.engine) || (a.id === b.id ? b.level - a.level : 0) || a.key.localeCompare(b.key),
   );
+  const filteredEngineCopies = sortedEngineCopies.filter(copy =>
+    copy.engine.name.toLocaleLowerCase('ru').includes(enginePickerSearch.toLocaleLowerCase('ru'))
+    && (enginePickerSpecialty === 'Все классы' || (copy.engine.specialty || 'Не указана') === enginePickerSpecialty)
+    && (enginePickerRank === 'Все ранги' || copy.engine.rank === enginePickerRank),
+  );
+  const engineRanks = [...new Set(sortedEngineCopies.map(copy => copy.engine.rank))]
+    .sort((a, b) => (a === 'S' ? 0 : a === 'A' ? 1 : 2) - (b === 'S' ? 0 : b === 'A' ? 1 : 2));
   const engineCostFor = (agentId: string, engineId: string, copyKey?: string) => {
     const w = costEngines.find(x => x.id === engineId);
     const a = costAgents.find(x => x.id === agentId);
@@ -382,7 +393,7 @@ export default function MatchSeries({ room, profile, playerOneName = 'Игрок
 
     {series.phase==='completed'&&<><div className="timer-grid"><div><span>{seriesPlayerOneName} · игра 1</span><b>{clock(series.game1_timer_one)}</b></div><div><span>{seriesPlayerTwoName} · игра 1</span><b>{clock(series.game1_timer_two)}</b></div><div><span>{seriesPlayerOneName} · игра 2</span><b>{clock(series.game2_timer_one)}</b></div><div><span>{seriesPlayerTwoName} · игра 2</span><b>{clock(series.game2_timer_two)}</b></div></div><div className="timer-grid"><div><span>Рестарты · {seriesPlayerOneName}</span><b>{series.game1_restarts_one ?? 0} + {series.game2_restarts_one ?? 0}</b></div><div><span>Рестарты · {seriesPlayerTwoName}</span><b>{series.game1_restarts_two ?? 0} + {series.game2_restarts_two ?? 0}</b></div></div><div className="timer-grid"><div><span>Штрафы · {seriesPlayerOneName}</span><b>+{fmtSeconds(penaltyOne)}</b></div><div><span>Штрафы · {seriesPlayerTwoName}</span><b>+{fmtSeconds(penaltyTwo)}</b></div></div><div className="series-result"><Trophy size={28}/><h2>{totalOne===totalTwo?'Ничья':totalOne<totalTwo?`Победил ${seriesPlayerOneName}`:`Победил ${seriesPlayerTwoName}`}</h2><p>Суммарное время с учётом штрафов: {seriesPlayerOneName} — {clock(totalOne)} (штрафы +{fmtSeconds(penaltyOne)}), {seriesPlayerTwoName} — {clock(totalTwo)} (штрафы +{fmtSeconds(penaltyTwo)}).</p><b>Разница: {clock(Math.abs(totalOne-totalTwo))}</b></div></>}
 
-    {squadGame && squadHere && enginePickerAgentId && <div className="series-engine-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setEnginePickerAgentId(null);}}><section className="series-engine-modal" role="dialog" aria-modal="true" aria-labelledby="series-engine-modal-title"><header><div><span className="eyebrow">АМПЛИФИКАТОРЫ РОСТЕРА</span><h3 id="series-engine-modal-title">{nameOf(enginePickerAgentId)}</h3></div><button type="button" className="icon-btn" aria-label="Закрыть выбор амплификатора" onClick={()=>setEnginePickerAgentId(null)}><X size={18}/></button></header><button type="button" className="series-engine-none" onClick={()=>{commitSlots(setEngine(slots,enginePickerAgentId,'',''));setEnginePickerAgentId(null);}}>Убрать амплификатор</button><div className="series-engine-grid">{sortedEngineCopies.map(copy=>{const usedBy=slots.find(item=>item.engine_copy_key===copy.key&&item.agent_id!==enginePickerAgentId);const selected=slots.some(item=>item.agent_id===enginePickerAgentId&&item.engine_copy_key===copy.key);return <button type="button" className={`series-engine-card ${selected?'selected':''}`} key={copy.key} disabled={Boolean(usedBy)||busy} title={usedBy?`Уже назначен: ${nameOf(usedBy.agent_id)}`:undefined} onClick={()=>{commitSlots(setEngine(slots,enginePickerAgentId,copy.id,copy.key));setEnginePickerAgentId(null);}}><span className="series-engine-card-image">{copy.engine.imageUrl&&<img src={copy.engine.imageUrl} data-fallback={copy.engine.imageFallbackUrl} alt="" onError={hideBrokenImage}/>}</span><b>{copy.engine.name}</b><small>Пробуждение Р{copy.level}</small><small>{engineCostFor(enginePickerAgentId,copy.id,copy.key)} кост.</small>{usedBy&&<small className="series-engine-used">Назначен: {nameOf(usedBy.agent_id)}</small>}</button>;})}</div></section></div>}
+    {squadGame && squadHere && enginePickerAgentId && <div className="series-engine-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setEnginePickerAgentId(null);}}><section className="series-engine-modal" role="dialog" aria-modal="true" aria-labelledby="series-engine-modal-title"><header><div><span className="eyebrow">АМПЛИФИКАТОРЫ РОСТЕРА</span><h3 id="series-engine-modal-title">{nameOf(enginePickerAgentId)}</h3></div><button type="button" className="icon-btn" aria-label="Закрыть выбор амплификатора" onClick={()=>setEnginePickerAgentId(null)}><X size={18}/></button></header><button type="button" className="series-engine-none" onClick={()=>{commitSlots(setEngine(slots,enginePickerAgentId,'',''));setEnginePickerAgentId(null);}}>Убрать амплификатор</button><div className="series-engine-filters"><input className="text-input" type="search" placeholder="Найти амплификатор…" value={enginePickerSearch} onChange={e=>setEnginePickerSearch(e.target.value)}/><label>Класс<select className="text-input" value={enginePickerSpecialty} onChange={e=>setEnginePickerSpecialty(e.target.value)}><option>Все классы</option>{specialtyOrder.map(item=><option key={item}>{item}</option>)}</select></label><label>Ранг<select className="text-input" value={enginePickerRank} onChange={e=>setEnginePickerRank(e.target.value)}><option>Все ранги</option>{engineRanks.map(rank=><option key={rank}>{rank}</option>)}</select></label></div>{filteredEngineCopies.length===0?<p className="muted-text">По этим фильтрам амплификаторы не найдены.</p>:<div className="series-engine-grid">{filteredEngineCopies.map(copy=>{const usedBy=slots.find(item=>item.engine_copy_key===copy.key&&item.agent_id!==enginePickerAgentId);const selected=slots.some(item=>item.agent_id===enginePickerAgentId&&item.engine_copy_key===copy.key);return <button type="button" className={`series-engine-card ${selected?'selected':''}`} key={copy.key} disabled={Boolean(usedBy)||busy} title={usedBy?`Уже назначен: ${nameOf(usedBy.agent_id)}`:undefined} onClick={()=>{commitSlots(setEngine(slots,enginePickerAgentId,copy.id,copy.key));setEnginePickerAgentId(null);}}><span className="series-engine-card-image">{copy.engine.imageUrl&&<img src={copy.engine.imageUrl} data-fallback={copy.engine.imageFallbackUrl} alt="" onError={hideBrokenImage}/>}</span><b>{copy.engine.name}</b><small>Пробуждение Р{copy.level}</small><small>{engineCostFor(enginePickerAgentId,copy.id,copy.key)} кост.</small>{usedBy&&<small className="series-engine-used">Назначен: {nameOf(usedBy.agent_id)}</small>}</button>;})}</div>}</section></div>}
     {error && <div className="notice-box"><p>{error}</p></div>}
   </div></div>;
 }
