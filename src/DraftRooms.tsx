@@ -539,7 +539,10 @@ export default function DraftRooms({ agents, engines, initialRoomId, judgeToken,
               const move=room.actions.find(a=>a.agent_id===agent.id);
               const wasPicked=move&&(move.action==='pick'||move.action==='mirror')&&move.side===sideId;
               const wasBanned=move?.action==='ban'&&move.side!==sideId;
-              const selectable=pool.includes(agent.id)&&((isMirrorStage&&eligibleMirrors.includes(agent.id))||!usedIds.has(agent.id));
+              // Identify the actual side panel, not just the agent ID: both rosters may
+              // contain the same agent, but a ban must only be clickable on the opponent's panel.
+              const isTargetPanel=activeAction?.action==='ban' ? sideId!==activeAction.side : sideId===activeAction?.side;
+              const selectable=isTargetPanel&&pool.includes(agent.id)&&((isMirrorStage&&eligibleMirrors.includes(agent.id))||!usedIds.has(agent.id));
               const canClick=selectable&&Boolean(activeAction)&&(isMyTurn||Boolean(activeJudgeToken))&&!busy&&!room.is_paused;
               const actionOverride=activeAction?.action==='ban'?undefined:isMirrorStage?(eligibleMirrors.includes(agent.id)?'mirror':'pick'):activeAction?.action==='pick'?'pick':undefined;
               return <button type="button" className={`draft-roster-card ${selectable?'selectable':''} ${canClick?'can-click':''} ${wasPicked?'was-picked':''} ${wasBanned?'was-banned':''}`} key={agent.id} disabled={!canClick} onClick={()=>void makeMove(agent.id,actionOverride)} title={`${agent.name} · ${specialty} · М${level}`}>
